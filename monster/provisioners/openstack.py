@@ -62,28 +62,28 @@ class Openstack(Provisioner):
 #==================
 # THREADING START
 #==================
-        threads = []
-        chef_nodes = []
-        from time import sleep
-        import Queue
-        q = Queue.Queue()
-        for features in template['nodes']:
-            name = self.name(features[0], deployment)
-            self.names.append(name)
-            flavor = util.config['rackspace']['roles'][features[0]]
-            tx = Thread(target=self.chef_instance, args=(deployment, name, q, flavor, ))
-            threads.append(tx)
-            util.logger.warning(Color.yellow("Starting thread"))
-            tx.start()
-            sleep(2)
-        for tx in threads:
-            tx.join()
-            util.logger.warning(Color.yellow("Ending thread"))
-            chef_nodes.append(q.get())
-
-        # acquire chef nodes
-        #chef_nodes = [tx.get() for tx in threads]
-        return chef_nodes
+#        threads = []
+#        chef_nodes = []
+#        from time import sleep
+#        import Queue
+#        q = Queue.Queue()
+#        for features in template['nodes']:
+#            name = self.name(features[0], deployment)
+#            self.names.append(name)
+#            flavor = util.config['rackspace']['roles'][features[0]]
+#            tx = Thread(target=self.chef_instance, args=(deployment, name, q, flavor, ))
+#            threads.append(tx)
+#            util.logger.warning(Color.yellow("Starting thread"))
+#            tx.start()
+#            sleep(2)
+#        for tx in threads:
+#            tx.join()
+#            util.logger.warning(Color.yellow("Ending thread"))
+#            chef_nodes.append(q.get())
+#
+#        # acquire chef nodes
+#        #chef_nodes = [tx.get() for tx in threads]
+#        return chef_nodes
 #==================
 # THREADING FINISH
 #==================
@@ -91,18 +91,20 @@ class Openstack(Provisioner):
 #==================
 # GEVENT START
 #==================
-#        events = []
-#        for features in template['nodes']:
-#            name = self.name(features[0], deployment)
-#            self.names.append(name)
-#            flavor = util.config['rackspace']['roles'][features[0]]
-#            events.append(spawn(self.chef_instance, deployment, name,
-#                                flavor=flavor))
-#        joinall(events)
-#
-#        # acquire chef nodes
-#        chef_nodes = [event.value for event in events]
-#        return chef_nodes
+        events = []
+        for features in template['nodes']:
+            name = self.name(features[0], deployment)
+            self.names.append(name)
+            flavor = util.config['rackspace']['roles'][features[0]]
+            events.append(spawn(self.chef_instance, deployment, name,
+                                flavor=flavor))
+        joinall(events)
+
+        # acquire chef nodes
+        chef_nodes = [event.value for event in events]
+        #from IPython import embed
+        #embed()
+        return chef_nodes
 #==================
 # GEVENT FINISH
 #==================
@@ -121,7 +123,7 @@ class Openstack(Provisioner):
         if client.exists:
             client.delete()
 
-    def chef_instance(self, deployment, name, q, flavor="2GBP"):
+    def chef_instance(self, deployment, name, q=None, flavor="2GBP"):
         """
         Builds an instance with desired specs and inits it with chef
         :param client: compute client object
@@ -161,7 +163,8 @@ class Openstack(Provisioner):
         node['uuid'] = server.id
         node['current_user'] = "root"
         node.save()
-        q.put(node)
+        if q:
+            q.put(node)
         return node
 
     def get_flavor(self, flavor):

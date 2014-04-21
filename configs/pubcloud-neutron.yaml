@@ -135,13 +135,13 @@ environments:
         heat-api-cfn: 192.168.4.153
         heat-api-cloudwatch: 192.168.4.153
         config:
-            192.168.4.151:
+            192.168.4.155:
                 vrid: 14
                 network: public
-            192.168.4.152:
+            192.168.4.156:
                 vrid: 15
                 network: public
-            192.168.4.153:
+            192.168.4.157:
                 vrid: 16
                 network: public
     bridge_devices:

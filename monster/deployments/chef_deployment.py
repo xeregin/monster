@@ -194,32 +194,32 @@ class Chef(Deployment):
 #==================
 # THREADING START
 #==================
-        threads = []
-        from time import sleep
-        for node in chef_nodes:
-            cnode = MonsterChefNode.from_chef_node(node, product, environment,
-                                                   deployment, provisioner,
-                                                   branch)
-            deployment.nodes.append(cnode)
-            tx = Thread(target=cls.provision_nodes,
-                        args=(provisioner, cnode, ))
-            threads.append(tx)
-            util.logger.warning(Color.yellow("Starting thread"))
-            tx.start()
-            sleep(2)
-        for tx in threads:
-            tx.join()
-            util.logger.warning(Color.yellow("Ending thread"))
+#        threads = []
+#        from time import sleep
+#        for node in chef_nodes:
+#            cnode = MonsterChefNode.from_chef_node(node, product, environment,
+#                                                   deployment, provisioner,
+#                                                   branch)
+#            deployment.nodes.append(cnode)
+#            tx = Thread(target=cls.provision_nodes,
+#                        args=(provisioner, cnode, ))
+#            threads.append(tx)
+#            util.logger.warning(Color.yellow("Starting thread"))
+#            tx.start()
+#            sleep(2)
+#        for tx in threads:
+#            tx.join()
+#            util.logger.warning(Color.yellow("Ending thread"))
 
-        # add features
-        for node, features in zip(deployment.nodes, template['nodes']):
-            node.add_features(features)
-
-        return deployment
-
-    @classmethod
-    def provision_nodes(cls, provisioner, cnode):
-        provisioner.post_provision(cnode)
+#        # add features
+#        for node, features in zip(deployment.nodes, template['nodes']):
+#            node.add_features(features)
+#
+#        return deployment
+ 
+#    @classmethod
+#    def provision_nodes(cls, provisioner, cnode):
+#        provisioner.post_provision(cnode)
 #==================
 # THREADING FINISH
 #==================
@@ -227,18 +227,18 @@ class Chef(Deployment):
 #==================
 # Non Threaded
 #==================
-#        for node in chef_nodes:
-#            cnode = MonsterChefNode.from_chef_node(node, product, environment,
-#                                                   deployment, provisioner,
-#                                                   branch)
-#            provisioner.post_provision(cnode)
-#            deployment.nodes.append(cnode)
-#
-#        # add features
-#        for node, features in zip(deployment.nodes, template['nodes']):
-#            node.add_features(features)
-#
-#        return deployment
+        for node in chef_nodes:
+            cnode = MonsterChefNode.from_chef_node(node, product, environment,
+                                                   deployment, provisioner,
+                                                   branch)
+            provisioner.post_provision(cnode)
+            deployment.nodes.append(cnode)
+
+        # add features
+        for node, features in zip(deployment.nodes, template['nodes']):
+            node.add_features(features)
+
+        return deployment
 #==================
 
     @classmethod
