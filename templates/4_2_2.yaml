@@ -1,21 +1,21 @@
-centos-ha-neutron:
+centos-neutron-ha:
   product: compute
   name: ha
   os: centos
   features:
-    openssh: default
-    monitoring: default
-    mysql: default
-    glance: default
-    cinder: local
-    nova: default
-    neutron: neutron
-    horizon: default
-    osops: default
-    ceilometer: default
-    keystone: default
-    osopsnetworks: default
+    ceilometer: default         # default
+    cinder: local               # local
+    glance: default             # default, cf
     highavailability: default
+    horizon: default            # default, neutron
+    keystone: default           # default, actived, openldap
+    monitoring: default         # default
+    mysql: default              # default
+    neutron: neutron            # neutron, quantum
+    nova: neutron               # nova, neutron, quantum
+    openssh: default            # server(default)
+    osops: default              # default
+    osopsnetworks: default
   nodes:
     - [chefserver]
     - [controller, network, orchestration]
@@ -29,41 +29,41 @@ centos-neutron-lite:
   name: ha
   os: centos
   features:
-    openssh: default
-    monitoring: default
-    mysql: default
-    glance: default
-    cinder: local
-    nova: default
-    neutron: neutron
-    horizon: default
-    osops: default
-    ceilometer: default
-    keystone: default
+    ceilometer: default         # default
+    cinder: local               # local
+    glance: default             # default, cf
+    horizon: default            # default, neutron
+    keystone: default           # default, actived, openldap
+    monitoring: default         # default
+    mysql: default              # default
+    neutron: neutron            # neutron, quantum
+    nova: neutron               # nova, neutron, quantum
+    openssh: default            # server(default)
+    osops: default              # default
     osopsnetworks: default
   nodes:
     - [chefserver]
     - [controller, network, orchestration]
     - [compute]
 
-ubuntu-ha-neutron:
+ubuntu-neutron-ha:
   product: compute
   name: ha
   os: ubuntu
   features:
-    openssh: default
-    monitoring: default
-    mysql: default
-    glance: default
-    cinder: local
-    nova: default
-    neutron: neutron
-    horizon: default
-    osops: default
-    ceilometer: default
-    keystone: default
-    osopsnetworks: default
+    ceilometer: default         # default
+    cinder: local               # local
+    glance: default             # default, cf
     highavailability: default
+    horizon: default            # default, neutron
+    keystone: default           # default, actived, openldap
+    monitoring: default         # default
+    mysql: default              # default
+    neutron: neutron            # neutron, quantum
+    nova: neutron               # nova, neutron, quantum
+    openssh: default            # server(default)
+    osops: default              # default
+    osopsnetworks: default
   nodes:
     - [chefserver]
     - [controller, network, orchestration]
@@ -72,23 +72,45 @@ ubuntu-ha-neutron:
     - [compute]
     - [compute]
 
-ubuntu-ha-novanet-actived:
+ubuntu-neutron-lite:
   product: compute
   name: ha
   os: ubuntu
   features:
-    openssh: default
-    monitoring: default
-    mysql: default
-    glance: default
-    cinder: local
-    nova: default
-    horizon: default
-    osops: default
-    ceilometer: default
-    keystone: actived
+    ceilometer: default         # default
+    cinder: local               # local
+    glance: default             # default, cf
+    horizon: default            # default, neutron
+    keystone: default           # default, actived, openldap
+    monitoring: default         # default
+    mysql: default              # default
+    neutron: neutron            # neutron, quantum
+    nova: neutron               # nova, neutron, quantum
+    openssh: default            # server(default)
+    osops: default              # default
     osopsnetworks: default
+  nodes:
+    - [chefserver]
+    - [controller, network, orchestration]
+    - [compute]
+
+ubuntu-novanet-ha-actived:
+  product: compute
+  name: ha
+  os: ubuntu
+  features:
+    ceilometer: default         # default
+    cinder: local               # local
+    glance: default             # default, cf
     highavailability: default
+    horizon: default            # default, neutron
+    keystone: actived           # default, actived, openldap
+    monitoring: default         # default
+    mysql: default              # default
+    nova: nova                  # nova, neutron, quantum
+    openssh: default            # server(default)
+    osops: default              # default
+    osopsnetworks: default
   nodes:
     - [chefserver]
     - [controller, orchestration]
@@ -97,23 +119,23 @@ ubuntu-ha-novanet-actived:
     - [compute]
     - [compute]
 
-ubuntu-ha-novanet-openldap:
+ubuntu-novanet-ha-openldap:
   product: compute
   name: ha
   os: ubuntu
   features:
-    openssh: default
-    monitoring: default
-    mysql: default
-    glance: default
-    cinder: local
-    nova: default
-    horizon: default
-    osops: default
-    ceilometer: default
-    keystone: openldap
-    osopsnetworks: default
+    ceilometer: default         # default
+    cinder: local               # local
+    glance: default             # default, cf
     highavailability: default
+    horizon: default            # default, neutron
+    keystone: openldap          # default, actived, openldap
+    monitoring: default         # default
+    mysql: default              # default
+    nova: nova                  # nova, neutron, quantum
+    openssh: default            # server(default)
+    osops: default              # default
+    osopsnetworks: default
   nodes:
     - [chefserver]
     - [controller, orchestration]
