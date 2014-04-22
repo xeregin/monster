@@ -1,20 +1,50 @@
 chef:
-    server:
-        install_script: https://raw.githubusercontent.com/rcbops/support-tools/master/chef-install/install-chef-server.sh
-        install_dir: /opt/rcbops
-        upgrade_dir: /opt/upgrade
     client:
-        version: 11.08.0
         run_cmd: "chef-client"
+        version: 11.08.0
+    server:
+        install_dir: /opt/rcbops
+        install_script: https://raw.githubusercontent.com/rcbops/support-tools/master/chef-install/install-chef-server.sh
+        upgrade_dir: /opt/upgrade
 environments:
+    bridge_devices:
+        data: vmnet
+        management: mgmt
     ceilometer:
         default:
              enabled: True
-    openssh:
-        server:
-            subsystem: "sftp internal-sftp"
-    package_component:
-        default: havana
+    cinder:
+        local:
+            storage:
+                provider: lvm
+                lvm:
+                    volume_group: vg_storage
+    developer_mode:
+        default:
+            default: false
+    glance:
+        default:
+            image_upload: true
+            images:
+                - cirros
+                - precise
+        cf:
+            api:
+                default_store: swift
+                swift_store_user: <Tenant_Id>:<Tenant_Name>
+                swift_store_key: <Tenant_Password>
+                swift_store_auth_version: "2"
+                swift_store_auth_address: https://identity.api.rackspacecloud.com/v2.0
+                swift_store_region: DFW
+            image_upload: true
+            images:
+                - cirros
+                - precise
+    horizon:
+        default:
+            theme: default
+        neutron:
+          enable_lb: true
     keystone:
         default:
             admin_user: admin
@@ -47,8 +77,17 @@ environments:
             procmon_provider: monit
     mysql:
         default:
-            root_network_acl: "%"
             allow_remote_root: true
+            root_network_acl: "%"
+    neutron:
+        quantum:
+            ovs:
+                network_type: gre
+        neutron:
+            lbaas:
+                enabled: true
+            ovs:
+                network_type: gre
     nova:
         quantum:
             apply_patches: false
@@ -62,54 +101,18 @@ environments:
                 virt_type: qemu
             network:
                 provider: neutron
+    openssh:
+        server:
+            subsystem: "sftp internal-sftp"
     osops:
         default:
             apply_patches: true
-    horizon:
-        neutron:
-          enable_lb: true
-        default:
-            theme: default
-    developer_mode:
-        default:
-            default: false
     osops_networks:
         management: 192.168.4.0/24
         nova: 192.168.4.0/24
         public: 192.168.4.0/24
-    glance:
-        default:
-            image_upload: true
-            images:
-                - cirros
-                - precise
-        cf:
-            api:
-                default_store: swift
-                swift_store_user: <Tenant_Id>:<Tenant_Name>
-                swift_store_key: <Tenant_Password>
-                swift_store_auth_version: "2"
-                swift_store_auth_address: https://identity.api.rackspacecloud.com/v2.0
-                swift_store_region: DFW
-            image_upload: true
-            images:
-                - cirros
-                - precise
-    neutron:
-        quantum:
-            ovs:
-                network_type: gre
-        neutron:
-            lbaas:
-                enabled: true
-            ovs:
-                network_type: gre
-    cinder:
-        local:
-            storage:
-                provider: lvm
-                lvm:
-                    volume_group: vg_storage
+    package_component:
+        default: havana
     vips:
         mysql-db: 192.168.4.151
         rabbitmq-queue: 192.168.4.152
@@ -144,9 +147,6 @@ environments:
             192.168.4.157:
                 vrid: 16
                 network: public
-    bridge_devices:
-        data: vmnet
-        management: mgmt
 rcbops:
     retrofit:
         supported:
