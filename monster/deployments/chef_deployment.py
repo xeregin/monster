@@ -5,12 +5,12 @@ from chef import autoconfigure
 from chef import Node as ChefNode
 from chef import Environment as ChefEnvironment
 
-from fabric.api import *
-from fabric.state import env
-from threading import Thread
+#from fabric.api import *
+#from fabric.state import env
+#from threading import Thread
 
 from monster import util
-from monster.color import Color
+#from monster.color import Color
 from monster.config import Config
 from monster.upgrades.util import int2word
 from monster.features.node import ChefServer
@@ -218,7 +218,7 @@ class Chef(Deployment):
 #            node.add_features(features)
 #
 #        return deployment
- 
+
 #    @classmethod
 #    def provision_nodes(cls, provisioner, cnode):
 #        provisioner.post_provision(cnode)
