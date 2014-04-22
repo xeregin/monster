@@ -2,12 +2,12 @@ from chef import Node, Client
 from provisioner import Provisioner
 from gevent import spawn, joinall, sleep
 
-from fabric.api import *
-from fabric.state import env
-from threading import Thread
+#from fabric.api import *
+#from fabric.state import env
+#from threading import Thread
 
 from monster import util
-from monster.color import Color
+#from monster.color import Color
 from monster.clients.openstack import Creds, Clients
 from monster.server_helper import run_cmd, check_port
 
@@ -69,7 +69,8 @@ class Openstack(Provisioner):
 #            name = self.name(features[0], deployment)
 #            self.names.append(name)
 #            flavor = util.config['rackspace']['roles'][features[0]]
-#            tx = Thread(target=self.chef_instance, args=(deployment, name, q, flavor, ))
+#            tx = Thread(target=self.chef_instance, args=(
+#                deployment, name, q, flavor, ))
 #            threads.append(tx)
 #            util.logger.warning(Color.yellow("Starting thread"))
 #            tx.start()
