@@ -25,11 +25,9 @@ if 'monster' not in os.environ.get('VIRTUAL_ENV', ''):
                         "the command \"source .venv/bin/activate\"")
 
 
-# Logger needs to be rewritten to accept a log filename
-def build(name="autotest", template="ubuntu-default", branch="master",
-          template_path=None, config="pubcloud-neutron.yaml",
+def build(name="testbuild", branch="master", config="pubcloud-neutron.yaml",
           dry=False, log=None, log_level="INFO", provisioner="rackspace",
-          secret_path=None):
+          secret_path=None, template="ubuntu-default", template_path=None):
     """
     Build an OpenStack Cluster
     """
