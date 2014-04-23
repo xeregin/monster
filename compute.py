@@ -19,9 +19,9 @@ from monster.tests.tempest_quantum import TempestQuantum
 from monster.deployments.chef_deployment import Chef as MonsterChefDeployment
 
 
-def build(name="testbuild", branch="master", config="pubcloud-neutron.yaml",
+def build(name="testbuild", branch="v4.2.2", config="pubcloud-neutron.yaml",
           dry=False, log=None, log_level="INFO", provisioner="rackspace",
-          secret_path="secret.yaml", template="ubuntu-default", template_path=None):
+          secret_path="secret.yaml", template="ubuntu-neutron-ha", template_path=None):
     """
     Build an OpenStack Cluster
     """

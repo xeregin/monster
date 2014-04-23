@@ -177,11 +177,11 @@ class Chef(Deployment):
         try:
             template = Config(path)[template]
         except KeyError:
-            logger.critical("Could not find template {0} in branch file:"
-                            "\n{1}".format(template, path))
+            logger.error("Could not find template {0} in branch ({1}):"
+                            "\n{2}".format(template, branch, path))
             for ckey in Config(path).config.keys():
                 if "secrets" not in ckey:
-                    util.logger.critical("Valid Template: {0}".format(ckey))
+                    logger.error("Valid Template: {0}".format(ckey))
             sys.exit(1)
 
         environment = MonsterChefEnvironment(name, local_api, description=name)
