@@ -21,7 +21,7 @@ from monster.deployments.chef_deployment import Chef as MonsterChefDeployment
 
 def build(name="testbuild", branch="master", config="pubcloud-neutron.yaml",
           dry=False, log=None, log_level="INFO", provisioner="rackspace",
-          secret_path=None, template="ubuntu-default", template_path=None):
+          secret_path="secret.yaml", template="ubuntu-default", template_path=None):
     """
     Build an OpenStack Cluster
     """
