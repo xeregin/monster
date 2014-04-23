@@ -1,3 +1,4 @@
+import logging
 import os
 import sys
 
@@ -22,6 +23,8 @@ from monster.nodes.chef_node import Chef as MonsterChefNode
 from monster.features import deployment as deployment_features
 from monster.environments.chef_environment import Chef as \
     MonsterChefEnvironment
+
+logger = logging.getLogger(__name__)
 
 
 class Chef(Deployment):
@@ -160,7 +163,7 @@ class Chef(Deployment):
 
         if ChefEnvironment(name, api=local_api).exists:
             # Use previous dry build if exists
-            util.logger.info("Using previous deployment:{0}".format(name))
+            logger.info("Using previous deployment:{0}".format(name))
             return cls.from_chef_environment(name)
 
         path = ""
@@ -174,8 +177,8 @@ class Chef(Deployment):
         try:
             template = Config(path)[template]
         except KeyError:
-            util.logger.critical("Could not find template {0} in branch file:"
-                                 "\n{1}".format(template, path))
+            logger.critical("Could not find template {0} in branch file:"
+                            "\n{1}".format(template, path))
             for ckey in Config(path).config.keys():
                 if "secrets" not in ckey:
                     util.logger.critical("Valid Template: {0}".format(ckey))
@@ -255,8 +258,7 @@ class Chef(Deployment):
         local_api = autoconfigure()
         environ = ChefEnvironment(environment, api=local_api)
         if not environ.exists:
-            util.logger.error("The specified environment, {0}, does not"
-                              "exist.".format(environment))
+            logger.error("Environment doesn't exist: {0}".format(environment))
             exit(1)
         override = environ.override_attributes
         default = environ.default_attributes
@@ -288,8 +290,7 @@ class Chef(Deployment):
         nodes = deployment_args.get('nodes', [])
         for node in (ChefNode(n, local_api) for n in nodes):
             if not node.exists:
-                util.logger.error("Non existant chef node:{0}".
-                                  format(node.name))
+                logger.error("Chef node not found:{0}".format(node.name))
                 continue
             cnode = MonsterChefNode.from_chef_node(node, product, environment,
                                                    deployment, provisioner,
@@ -337,7 +338,7 @@ class Chef(Deployment):
         # stringify and lowercase classes in deployment features
         classes = util.module_classes(deployment_features)
         for feature, rpcs_feature in features.items():
-            util.logger.debug("feature: {0}, rpcs_feature: {1}".format(
+            logger.debug("feature: {0}, rpcs_feature: {1}".format(
                 feature, rpcs_feature))
             self.features.append(classes[feature](self, rpcs_feature))
 
