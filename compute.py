@@ -19,11 +19,10 @@ from monster.tests.tempest_neutron import TempestNeutron
 from monster.tests.tempest_quantum import TempestQuantum
 
 
-<<<<<<< HEAD
 def build(name="testbuild", branch="v4.2.2", config="pubcloud-neutron.yaml",
-          dry=False, log=None, log_level="INFO", provisioner="rackspace",
-          secret_path="secret.yaml", template="ubuntu-neutron-ha", template_path=None,
-          orchestrator_name="chef"):
+          dry=False, log=None, log_level="INFO", provisioner_name="rackspace",
+          secret_path="secret.yaml", template="ubuntu-neutron-ha",
+          template_path=None, orchestrator_name="chef"):
     """Build an OpenStack cluster."""
 
     # Provision deployment

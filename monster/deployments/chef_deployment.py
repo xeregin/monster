@@ -3,7 +3,7 @@ import sys
 import webbrowser
 
 from chef import Node as ChefNode
-from chef import Environment as ChefEnvironment
+#from chef import Environment as ChefEnvironment
 
 #from fabric.api import *
 #from fabric.state import env
@@ -11,7 +11,7 @@ from chef import Environment as ChefEnvironment
 
 from pyrabbit.api import Client as RabbitClient
 from monster import util
-from monster.config import Config
+#from monster.config import Config
 from monster.upgrades.util import int2word
 from monster.clients.openstack import Creds, Clients
 from monster.deployments.deployment import Deployment
