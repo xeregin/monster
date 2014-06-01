@@ -11,9 +11,9 @@ from string import Template
 from time import sleep
 from itertools import ifilter, chain
 
-from monster import util
+import monster.active as active
 from monster.tests.test import Test
-from monster.util import xunit_merge
+from monster.tests.util import xunit_merge
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ class TempestNeutron(Test):
     def tempest_configure(self):
         """Gathers all the values for tempest config file."""
         tempest = self.tempest_config
-        override = self.deployment.environment.override_attributes
+        override = self.deployment.override_attrs
         controller = next(self.deployment.search_role("controller"))
         ip = controller['rabbitmq']['address']
 
@@ -131,8 +131,8 @@ class TempestNeutron(Test):
             "URL": url,
             "IS_NEUTRON": is_neutron}
         template_path = os.path.join(os.path.dirname(
-            os.path.abspath(__file__)), os.pardir, os.pardir,
-            "files/testing_setup_neutron.py.template")
+            os.path.abspath(__file__)), os.pardir,
+            "data/files/testing_setup_neutron.py.template")
 
         # apply values
         with open(template_path) as f:
@@ -157,7 +157,7 @@ class TempestNeutron(Test):
         return json.loads(raw)
 
     def feature_test_paths(self, paths=None):
-        test_map = util.config['tests']['tempest']['test_map']
+        test_map = active.config['tests']['tempest']['test_map']
         if not paths:
             features = self.deployment.feature_names
             paths = ifilter(None, set(
@@ -179,25 +179,18 @@ class TempestNeutron(Test):
         """
 
         # clone tempest
-        tempest_dir = util.config['tests']['tempest']['dir']
+        tempest_dir = active.config['tests']['tempest']['dir']
         checkout = "cd {0}; git checkout stable/havana".format(tempest_dir)
         node.run_cmd(checkout)
 
         # format flags
         xunit_file = "{0}.xml".format(node.name)
-        xunit_flag = ''
-        if xunit:
-            xunit_flag = '--with-xunit --xunit-file=%s' % xunit_file
-
+        xunit_flag = ('--with-xunit --xunit-file={0}'.format(xunit_file)
+                      if xunit else "")
         tag_flag = "-a " + " -a ".join(tags) if tags else ""
-
-        exclude_flag = "-e " + " -e ".join(exclude) if exclude else ''
-
+        config_arg = ("-c {0}".format(config_path) if config_path else "")
+        exclude_flag = "-e " + " -e ".join(exclude) if exclude else ""
         path_args = " ".join(self.feature_test_paths())
-
-        config_arg = ""
-        if config_path:
-            config_arg = "-c {0}".format(config_path)
 
         # build commands
         tempest_command = (
@@ -209,8 +202,8 @@ class TempestNeutron(Test):
         screen = [
             "screen -d -m -S tempest -t shell -s /bin/bash",
             "screen -S tempest -X screen -t tempest",
-            "export NL=`echo -ne '\015'`",
-            'screen -S tempest -p tempest -X stuff "{0}$NL"'.format(
+            r"export NL=`echo -ne '\015'`",
+            "screen -S tempest -p tempest -X stuff \"{0}$NL\"".format(
                 tempest_command)
         ]
         command = "; ".join(screen)
@@ -220,11 +213,12 @@ class TempestNeutron(Test):
     def wait_for_results(self):
         """Waits for tempest results to come be reported."""
         cmd = 'stat -c "%s" {0}.xml'.format(self.test_node.name)
-        result = self.test_node.run_cmd(cmd)['return'].rstrip()
-        while result == "0":
+        result = self.test_node.run_cmd(cmd)
+        while not result['success']:
             logger.info("Waiting for test results")
             sleep(30)
-            result = self.test_node.run_cmd(cmd)['return'].rstrip()
+            result = self.test_node.run_cmd(cmd)
+        return result['return']
 
     def tempest_branch(self, branch):
         """Given rcbops branch, returns tempest branch.
@@ -232,7 +226,7 @@ class TempestNeutron(Test):
         :type branch: string
         :rtype: string
         """
-        branches = util.config['rcbops']['compute']['git']['branches']
+        branches = active.config['rcbops']['compute']['git']['branches']
         branch_format = "stable/{0}"
         if branch in branches.keys():
             tag_branch = branch_format.format(branch)
@@ -249,8 +243,8 @@ class TempestNeutron(Test):
         :param branch: branch to clone
         :type branch: string
         """
-        repo = util.config['tests']['tempest']['repo']
-        tempest_dir = util.config['tests']['tempest']['dir']
+        repo = active.config['tests']['tempest']['repo']
+        tempest_dir = active.config['tests']['tempest']['dir']
         clone = "git clone {0} -b {1} {2}".format(repo, branch, tempest_dir)
         self.test_node.run_cmd(clone)
 
@@ -264,8 +258,9 @@ class TempestNeutron(Test):
                                    "libxml2 libxslt1-dev libpq-dev python-pip")
 
         # install python requirements for tempest
-        tempest_dir = util.config['tests']['tempest']['dir']
-        install_cmd = "pip install -r {0}/requirements.txt".format(tempest_dir)
+        tempest_dir = active.config['tests']['tempest']['dir']
+        install_cmd = "pip install -r {0}/requirements.txt nose".format(
+            tempest_dir)
         self.test_node.run_cmd(install_cmd)
 
     def build_config(self):
@@ -273,8 +268,8 @@ class TempestNeutron(Test):
         self.tempest_configure()
         # find template
         template_path = os.path.join(os.path.dirname(
-            os.path.abspath(__file__)), os.pardir, os.pardir,
-            "files/tempest_neutron.conf")
+            os.path.abspath(__file__)), os.pardir,
+            "data/files/tempest_neutron.conf")
 
         # open template and add values
         with open(template_path) as f:
@@ -289,7 +284,7 @@ class TempestNeutron(Test):
 
     def send_config(self):
         """Sends tempest config file to node."""
-        tempest_dir = util.config['tests']['tempest']['dir']
+        tempest_dir = active.config['tests']['tempest']['dir']
         rem_config_path = "{0}/etc/tempest.conf".format(tempest_dir)
         self.test_node.run_cmd("rm {0}".format(rem_config_path))
         self.test_node.scp_to(self.path, remote_path=rem_config_path)
