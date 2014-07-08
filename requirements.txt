@@ -3,13 +3,16 @@ decorator
 argcomplete
 argh
 fabric
-gevent
+futures
+ipython
 lazy
 paramiko
+paste
 pychef
 pytest
 pyrabbit
 pyrax
+pyramid
 python-cinderclient
 python-keystoneclient
 python-neutronclient
